@@ -1,0 +1,163 @@
+// ------------------------------
+// Import Bootstrap
+// ------------------------------
+// @import "../bower_components/bootstrap/css/bootstrap";
+
+// ------------------------------
+// Variables
+// ------------------------------
+$backgroundColor: #f3f3f3;
+$dueIconColor: #f0ad4e;
+$dateIconColor: #337ab7;
+$prioColor: #b24926;
+
+
+// ------------------------------
+// Extending classes
+// ------------------------------
+.has-error {
+    input[type="text"], input[type="date"], textarea {
+        background-color: lighten(#a94442, 50%);
+    }
+
+    label { color: lighten(#a94442, 10%); }
+
+    .help-block {
+        position: absolute;
+        bottom: -3px;
+        right: 30px;
+    }
+}
+
+
+
+// ------------------------------
+// General
+// ------------------------------
+
+body {
+    background-color: $backgroundColor;
+    padding: 20px 0;
+}
+
+.container {
+    background-color: rgba(0, 0, 0, .03);
+    border-radius: 10px;
+}
+
+#add-form {
+    margin-bottom: 10px;
+}
+
+.row {
+    // background-color: rgba(0, 0, 0, .2);
+}
+
+#edit-btn {
+    // float: right;
+    // clear: both;
+    margin-bottom: 20px;
+}
+
+#tasks {
+    // clear: both;
+    counter-reset: my-counter;
+
+    .task {
+        // Push all to the right to make room for the counter
+        padding-left: 60px;
+        overflow: hidden;
+
+        // Title
+        h4 {
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        // Prio exlamation marks
+        .prio {
+            color: $prioColor;
+            font-size: 1em;
+        }
+
+        // Count the list itmes and display it
+        &:before {
+            content: counter(my-counter);
+            counter-increment: my-counter;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 10px;
+            font-size: 5em;
+            color: rgba(0, 0, 0, .05);
+        }
+
+
+
+        // Added date
+        .date {
+            font-size: .8em;
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            color: rgba(0, 0, 0, .7);
+
+            span {
+                color: $dateIconColor;
+            }
+        }
+
+        // Due date
+        .due {
+            font-size: 1.5em;
+            font-weight: 200;
+            color: rgba(0, 0, 0, .7);
+            position: relative;
+            padding-left: 30px;
+
+            // Time icon for due date
+            span {
+                position: absolute;
+                left: 0px;
+                color: $dueIconColor;
+            }
+        }
+
+        // Hamburger icon for moving list items
+        .move-icon {
+            position: absolute;
+            top: 50%;
+            right: 50px;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            color: rgba(0, 0, 0, .3);
+            cursor: move;
+            // opacity: 0;
+            // transition: all .5s;
+        }
+        &:hover .move-icon {
+            // opacity: 1;
+        }
+
+        .edit-btns {
+            position: absolute;
+            top: 50%;
+            right: -110px;
+            opacity: 0;
+            transform: translateY(-50%);
+            transition: all .5s ease-in-out;
+        }
+        .edit-mode {
+            right: 40px;
+            opacity: 1;
+        }
+
+
+    }
+
+    // When list item is moving dim it down
+    .moving-task {
+        opacity: .6;
+    }
+
+}

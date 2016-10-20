@@ -1,0 +1,81 @@
+.has-error input[type="text"], .has-error input[type="date"], .has-error textarea {
+  background-color: #f9f1f1; }
+.has-error label {
+  color: #c0605e; }
+.has-error .help-block {
+  position: absolute;
+  bottom: -3px;
+  right: 30px; }
+
+body {
+  background-color: #f3f3f3;
+  padding: 20px 0; }
+
+.container {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 10px; }
+
+#add-form {
+  margin-bottom: 10px; }
+
+#edit-btn {
+  margin-bottom: 20px; }
+
+#tasks {
+  counter-reset: my-counter; }
+  #tasks .task {
+    padding-left: 60px;
+    overflow: hidden; }
+    #tasks .task h4 {
+      margin-top: 20px;
+      margin-bottom: 5px; }
+    #tasks .task .prio {
+      color: #b24926;
+      font-size: 1em; }
+    #tasks .task:before {
+      content: counter(my-counter);
+      counter-increment: my-counter;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 10px;
+      font-size: 5em;
+      color: rgba(0, 0, 0, 0.05); }
+    #tasks .task .date {
+      font-size: .8em;
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      color: rgba(0, 0, 0, 0.7); }
+      #tasks .task .date span {
+        color: #337ab7; }
+    #tasks .task .due {
+      font-size: 1.5em;
+      font-weight: 200;
+      color: rgba(0, 0, 0, 0.7);
+      position: relative;
+      padding-left: 30px; }
+      #tasks .task .due span {
+        position: absolute;
+        left: 0px;
+        color: #f0ad4e; }
+    #tasks .task .move-icon {
+      position: absolute;
+      top: 50%;
+      right: 50px;
+      transform: translateY(-50%);
+      font-size: 1.5em;
+      color: rgba(0, 0, 0, 0.3);
+      cursor: move; }
+    #tasks .task .edit-btns {
+      position: absolute;
+      top: 50%;
+      right: -110px;
+      opacity: 0;
+      transform: translateY(-50%);
+      transition: all .5s ease-in-out; }
+    #tasks .task .edit-mode {
+      right: 40px;
+      opacity: 1; }
+  #tasks .moving-task {
+    opacity: .6; }
