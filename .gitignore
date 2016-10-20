@@ -34,4 +34,10 @@ Temporary Items
 .sass-cache/
 *.css.map
 
+### Bower ###
+bower_components
+.bower-cache
+.bower-registry
+.bower-tmp
+
 README.html
