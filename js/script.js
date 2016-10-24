@@ -32,6 +32,7 @@ var Todo = {
         this.checkDB();
         this.cacheDom();
         this.bindEvents();
+        this.renderTasks();
         this.initDatesInForm();
         this.makeTasksDraggable();
     },
@@ -107,7 +108,8 @@ var Todo = {
             'dueDate': this.$formDueDate.val(),
             'heading': this.$formHeading.val(),
             'desc': this.$formDesc.val(),
-            'priority': this.$formPrio.children('.active').find('input').data("prio")
+            'priority': this.$formPrio.children('.active').find('input').data("prio"),
+            'id': this.tasks.length + 1
         }
 
         return formValues;
@@ -118,10 +120,27 @@ var Todo = {
     // ----------------------------------------
     bindEvents: function() {
         this.$formAddButton.on( 'click', this.addTask );
-        this.$editBtn.on( 'click', this.toggleEditMode );
+        // this.cacheDom();
+        $(document).on('click', this.$editBtn, this.toggleEditMode);
+        // this.$editBtn.on( 'click', this.toggleEditMode );
 
         // Log the tasks to the console when pressing Escape
-        $(document).on('keydown', function(e) { e.keyCode === 27 && console.log( Todo.tasks ); });
+        $(document).on('keydown', function(e) {
+            if (e.keyCode === 27) {
+                console.log('Array:');
+                console.log( Todo.tasks );
+
+                // console.log('localStorage:');
+                // console.log( localStorage.getItem('todoList') );
+            }
+        });
+
+        // Clear localStorage
+        $('.clearLS').on('click', function() {
+            localStorage.clear();
+            console.log('localStorage cleared');
+            Todo.tasks = [];
+        });
     },
 
     // ----------------------------------------
@@ -129,6 +148,9 @@ var Todo = {
     // ----------------------------------------
     toggleEditMode: function() {
         var self = Todo;
+        // Cache the dom again so we know what $('.edit-btns') is...
+        // Maybe not the ideal way to go but hey... I'm just a student.
+        self.cacheDom();
         self.$editBtns.toggleClass('edit-mode');
     },
 
@@ -152,7 +174,7 @@ var Todo = {
         var task = this.getFormValues();
         console.log(task);
         this.tasks.push(task);
-        // this.updateDB();
+        this.updateDB();
     },
 
     // ----------------------------------------
@@ -160,6 +182,7 @@ var Todo = {
     // ----------------------------------------
     updateDB: function() {
         localStorage.setItem( 'todoList', JSON.stringify(this.tasks) );
+        this.renderTasks();
     },
 
     // ----------------------------------------
@@ -215,6 +238,57 @@ var Todo = {
         }
 
         return passedValidation;
+    },
+
+    // ----------------------------------------
+    // Build the markup for the tasks
+    // ----------------------------------------
+    renderTasks: function() {
+        // Empty the UL
+        this.$tasksUL.html('');
+
+        // Set a header if the list is empty
+        if (this.tasks.length === 0) {
+            this.$tasksUL.html('<h2>You have no tasks!</h2>');
+            this.$editBtn.hide();
+        } else { this.$editBtn.show(); }
+
+        for (var i = 0; i < this.tasks.length; i++) {
+            var html = "", prio;
+            // Set prio from int to !, !! or !!!
+            if(this.tasks[i].priority === 1) { prio = "!" }
+            else if(this.tasks[i].priority === 2) { prio = "!!" }
+            else if(this.tasks[i].priority === 3) { prio = "!!" }
+
+            // Build all the markup (yes, this is ugly, I know!)
+
+            html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item">';
+                html+='<span class="date"><span class="glyphicon glyphicon-calendar"></span> '+ this.tasks[i].todaysDate +'</span>';
+                html+='<h4><span class="prio">'+ prio +'</span> '+ this.tasks[i].heading +'</h4>';
+                html+='<p class="desc">'+ this.tasks[i].desc +'</p>';
+                html+='<span class="due"><span class="glyphicon glyphicon-time"></span> '+ this.tasks[i].dueDate +'</span>';
+
+                html+='<span class="move-icon glyphicon glyphicon-menu-hamburger"></span>';
+
+                html+='<div class="btn-group btn-group-lg edit-btns">';
+                    html+='<button type="button" class="btn btn-default">';
+                        html+='<span class="glyphicon glyphicon-check text-success"></span>';
+                    html+='</button>';
+
+                    html+='<button type="button" class="btn btn-default">';
+                        html+='<span class="glyphicon glyphicon-edit text-warning"></span>';
+                    html+='</button>';
+
+                    html+='<button type="button" class="btn btn-default">';
+                        html+='<span class="glyphicon glyphicon-remove-circle text-danger"></span>';
+                    html+='</button>';
+                html+='</div>';
+            html+='</li>';
+
+            // Append the markup to the UL
+            this.$tasksUL.append(html);
+        }
+
     }
 };
 

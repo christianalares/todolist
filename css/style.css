@@ -7,6 +7,11 @@
   bottom: -3px;
   right: 30px; }
 
+.clearLS {
+  position: fixed;
+  bottom: 10px;
+  left: 10px; }
+
 body {
   background-color: #f3f3f3;
   padding: 20px 0; }
