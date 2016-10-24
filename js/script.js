@@ -1,31 +1,5 @@
 var Todo = {
     // ----------------------------------------
-    // Global variables (including dumb tasks)
-    // ----------------------------------------
-    dumbTasks: [{
-            'todaysDate': '2016-10-20',
-            'dueDate': '2016-10-22',
-            'heading': 'Tvätta (Task 1)',
-            'task': 'Tvätta allt vitt ikväll!',
-            'priority': 1
-        },
-        {
-            'todaysDate': '2016-10-20',
-            'dueDate': '2016-10-22',
-            'heading': 'Skura (Task 2)',
-            'task': 'Skura badrummet!',
-            'priority': 3
-        },
-        {
-            'todaysDate': '2016-10-20',
-            'dueDate': '2016-10-22',
-            'heading': 'Hämta på dagis (Task 2)',
-            'task': 'Hämta lillen på dagis kl 16',
-            'priority': 3
-        }
-    ],
-
-    // ----------------------------------------
     // Initialize
     // ----------------------------------------
     init: function() {
@@ -119,10 +93,10 @@ var Todo = {
     // Event binding
     // ----------------------------------------
     bindEvents: function() {
+
         this.$formAddButton.on( 'click', this.addTask );
-        // this.cacheDom();
-        $(document).on('click', this.$editBtn, this.toggleEditMode);
-        // this.$editBtn.on( 'click', this.toggleEditMode );
+        $(document).on('click', '#' + this.$editBtn.attr('id'), this.toggleEditMode);
+        $(document).on('click', '.edit-btns button', this.doActionWithItem);
 
         // Log the tasks to the console when pressing Escape
         $(document).on('keydown', function(e) {
@@ -172,7 +146,6 @@ var Todo = {
     // ----------------------------------------
     pushToArray: function() {
         var task = this.getFormValues();
-        console.log(task);
         this.tasks.push(task);
         this.updateDB();
     },
@@ -258,7 +231,7 @@ var Todo = {
             // Set prio from int to !, !! or !!!
             if(this.tasks[i].priority === 1) { prio = "!" }
             else if(this.tasks[i].priority === 2) { prio = "!!" }
-            else if(this.tasks[i].priority === 3) { prio = "!!" }
+            else if(this.tasks[i].priority === 3) { prio = "!!!" }
 
             // Build all the markup (yes, this is ugly, I know!)
 
@@ -271,15 +244,15 @@ var Todo = {
                 html+='<span class="move-icon glyphicon glyphicon-menu-hamburger"></span>';
 
                 html+='<div class="btn-group btn-group-lg edit-btns">';
-                    html+='<button type="button" class="btn btn-default">';
+                    html+='<button type="button" data-action="doneAction" class="btn btn-default">';
                         html+='<span class="glyphicon glyphicon-check text-success"></span>';
                     html+='</button>';
 
-                    html+='<button type="button" class="btn btn-default">';
+                    html+='<button type="button" data-action="editAction" class="btn btn-default">';
                         html+='<span class="glyphicon glyphicon-edit text-warning"></span>';
                     html+='</button>';
 
-                    html+='<button type="button" class="btn btn-default">';
+                    html+='<button type="button" data-action="deleteAction" class="btn btn-default">';
                         html+='<span class="glyphicon glyphicon-remove-circle text-danger"></span>';
                     html+='</button>';
                 html+='</div>';
@@ -289,6 +262,18 @@ var Todo = {
             this.$tasksUL.append(html);
         }
 
+    },
+
+    // ----------------------------------------
+    // Action button clicked (check, edit, delete)
+    // ----------------------------------------
+    doActionWithItem: function() {
+        var $this = $(this),
+            action = $this.data('action');
+
+        if(action === 'doneAction') { this.actionMarkDone(); }
+        else if(action === 'editAction') {  }
+        else if(action === 'deleteAction') {  }
     }
 };
 
