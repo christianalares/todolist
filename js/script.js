@@ -321,7 +321,8 @@ var Todo = {
             if (this.tasks[i].id === id) {
                 var $itemToRemove = $( '[data-task-id='+ id +']' );
 
-                itemToRemove = this.tasks[i];
+                itemToRemove = i;
+                // console.log(itemToRemove);
                 break;
             }
         }
@@ -341,7 +342,7 @@ var Todo = {
     editTask: function(id) {
 
         for (var i = 0; i < this.tasks.length; i++) {
-            
+
         }
     }
 };
