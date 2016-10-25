@@ -82,5 +82,10 @@ body {
     #tasks .task .edit-mode {
       right: 40px;
       opacity: 1; }
+  #tasks .item-done {
+    background-color: #f5fbf5;
+    opacity: .5; }
+    #tasks .item-done h4, #tasks .item-done .desc, #tasks .item-done .due {
+      text-decoration: line-through; }
   #tasks .moving-task {
     opacity: .6; }

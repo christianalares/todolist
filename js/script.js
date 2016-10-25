@@ -17,7 +17,7 @@ var Todo = {
     checkDB: function() {
         var result = localStorage.getItem('todoList');
 
-        if( result == null  ) {
+        if( result === null  ) {
             this.tasks = [];
         }
         else {
@@ -83,8 +83,9 @@ var Todo = {
             'heading': this.$formHeading.val(),
             'desc': this.$formDesc.val(),
             'priority': this.$formPrio.children('.active').find('input').data("prio"),
-            'id': this.tasks.length + 1
-        }
+            'id': this.tasks.length + 1,
+            'isDone': false
+        };
 
         return formValues;
     },
@@ -153,9 +154,11 @@ var Todo = {
     // ----------------------------------------
     // Add to the localStorage DB
     // ----------------------------------------
-    updateDB: function() {
+    updateDB: function(skipRender) {
         localStorage.setItem( 'todoList', JSON.stringify(this.tasks) );
-        this.renderTasks();
+        if(!skipRender) {
+            this.renderTasks();
+        }
     },
 
     // ----------------------------------------
@@ -171,7 +174,7 @@ var Todo = {
 
         if( !task.todaysDate.match(todaysDateMatch) ) {
             passedValidation = false;
-            var errorMessage = "The date has to be in format YYYY-MM-DD";
+            errorMessage = "The date has to be in format YYYY-MM-DD";
             this.$formTodaysDate.parent().addClass('has-error')
                 .prepend('<span class="help-block">'+ errorMessage +'</span>');
 
@@ -182,7 +185,7 @@ var Todo = {
 
         if( !task.dueDate.match(dueDateMatch) ) {
             passedValidation = false;
-            var errorMessage = "The date has to be in format YYYY-MM-DD";
+            errorMessage = "The date has to be in format YYYY-MM-DD";
             this.$formDueDate.parent().addClass('has-error')
                 .prepend('<span class="help-block">'+ errorMessage +'</span>');
         } else {
@@ -192,7 +195,7 @@ var Todo = {
 
         if( !task.heading.match(headingMatch) ) {
             passedValidation = false;
-            var errorMessage = "The heading has to be 1-50 characters";
+            errorMessage = "The heading has to be 1-50 characters";
             this.$formHeading.parent().addClass('has-error')
                 .prepend('<span class="help-block">'+ errorMessage +'</span>');
         } else {
@@ -202,7 +205,7 @@ var Todo = {
 
         if( task.desc.length <= 0 || task.desc.length > 200) {
             passedValidation = false;
-            var errorMessage = "The description has to be 1-200 characters";
+            errorMessage = "The description has to be 1-200 characters";
             this.$formDesc.parent().addClass('has-error')
             .prepend('<span class="help-block">'+ errorMessage +'</span>');
         } else {
@@ -227,15 +230,18 @@ var Todo = {
         } else { this.$editBtn.show(); }
 
         for (var i = 0; i < this.tasks.length; i++) {
-            var html = "", prio;
+            var html = "", prio, isDone;
             // Set prio from int to !, !! or !!!
-            if(this.tasks[i].priority === 1) { prio = "!" }
-            else if(this.tasks[i].priority === 2) { prio = "!!" }
-            else if(this.tasks[i].priority === 3) { prio = "!!!" }
+            if(this.tasks[i].priority === 1) { prio = "!"; }
+            else if(this.tasks[i].priority === 2) { prio = "!!"; }
+            else if(this.tasks[i].priority === 3) { prio = "!!!"; }
+
+            if(this.tasks[i].isDone) { isDone = " item-done"; } // This string will be added to the class
+            else { isDone = ""; }
 
             // Build all the markup (yes, this is ugly, I know!)
 
-            html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item">';
+            html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item'+ isDone +'">';
                 html+='<span class="date"><span class="glyphicon glyphicon-calendar"></span> '+ this.tasks[i].todaysDate +'</span>';
                 html+='<h4><span class="prio">'+ prio +'</span> '+ this.tasks[i].heading +'</h4>';
                 html+='<p class="desc">'+ this.tasks[i].desc +'</p>';
@@ -268,12 +274,75 @@ var Todo = {
     // Action button clicked (check, edit, delete)
     // ----------------------------------------
     doActionWithItem: function() {
+        // this = the button that was clicked
+        var self = Todo;
         var $this = $(this),
+            id = $this.parent().parent().data('task-id'),
             action = $this.data('action');
 
-        if(action === 'doneAction') { this.actionMarkDone(); }
-        else if(action === 'editAction') {  }
-        else if(action === 'deleteAction') {  }
+        if(action === 'doneAction') { self.toggleMarkDone(id); }
+        else if(action === 'editAction') { self.editTask(id); }
+        else if(action === 'deleteAction') { self.deleteTask(id); }
+    },
+
+    // ----------------------------------------
+    // Mark task done
+    // ----------------------------------------
+    toggleMarkDone: function(id) {
+        for (var i = 0; i < this.tasks.length; i++) {
+            // this.tasks[i]
+            if (this.tasks[i].id === id) {
+                var $itemToMarkDone = $( '[data-task-id='+ id +']' );
+
+                if ( $itemToMarkDone.hasClass('item-done') ) {
+                    this.tasks[i].isDone = false;
+                    $itemToMarkDone.removeClass('item-done');
+                }
+                else {
+                    this.tasks[i].isDone = true;
+                    $itemToMarkDone.addClass('item-done');
+                }
+
+                break;
+            }
+        }
+        this.toggleEditMode();
+        this.updateDB(true);
+    },
+
+    // ----------------------------------------
+    // Delete task
+    // ----------------------------------------
+    deleteTask: function(id) {
+        var itemToRemove,
+            self = this;
+
+        for (var i = 0; i < this.tasks.length; i++) {
+            if (this.tasks[i].id === id) {
+                var $itemToRemove = $( '[data-task-id='+ id +']' );
+
+                itemToRemove = this.tasks[i];
+                break;
+            }
+        }
+
+        this.tasks.splice(itemToRemove, 1);
+        this.toggleEditMode();
+
+        $itemToRemove.slideUp(function() {
+            self.updateDB();
+            $(this).remove();
+        });
+    },
+
+    // ----------------------------------------
+    // Edit task
+    // ----------------------------------------
+    editTask: function(id) {
+
+        for (var i = 0; i < this.tasks.length; i++) {
+            
+        }
     }
 };
 
