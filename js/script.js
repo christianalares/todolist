@@ -240,7 +240,6 @@ var Todo = {
             else { isDone = ""; }
 
             // Build all the markup (yes, this is ugly, I know!)
-
             html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item'+ isDone +'">';
                 html+='<span class="date"><span class="glyphicon glyphicon-calendar"></span> '+ this.tasks[i].todaysDate +'</span>';
                 html+='<h4><span class="prio">'+ prio +'</span> '+ this.tasks[i].heading +'</h4>';
