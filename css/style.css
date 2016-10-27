@@ -30,6 +30,7 @@ body {
   counter-reset: my-counter; }
   #tasks .task {
     padding-left: 60px;
+    padding-right: 90px;
     overflow: hidden; }
     #tasks .task h4 {
       margin-top: 20px;
@@ -100,3 +101,6 @@ body {
     margin-left: 10px; }
   #tasks .moving-task {
     opacity: .6; }
+
+#update-button {
+  display: none; }

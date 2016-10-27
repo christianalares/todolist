@@ -1,4 +1,5 @@
 var Todo = {
+    taskToEdit: "",
     // ----------------------------------------
     // Initialize
     // ----------------------------------------
@@ -62,6 +63,7 @@ var Todo = {
     cacheDom: function() {
         this.$form = $('#add-form');
         this.$formAddButton = $('#add-button');
+        this.$formUpdateButton = $('#update-button');
         this.$formTodaysDate = $('#date');
         this.$formDueDate = $('#due');
         this.$formHeading = $('#heading');
@@ -78,7 +80,7 @@ var Todo = {
     // ----------------------------------------
     getFormValues: function() {
         var formValues = {
-            'todaysDate': this.$formTodaysDate.val(),
+            'addedDate': this.$formTodaysDate.val(),
             'dueDate': this.$formDueDate.val(),
             'heading': this.$formHeading.val(),
             'desc': this.$formDesc.val(),
@@ -98,6 +100,7 @@ var Todo = {
         this.$formAddButton.on( 'click', this.addTask );
         $(document).on('click', '#' + this.$editBtn.attr('id'), this.toggleEditMode);
         $(document).on('click', '.edit-btns button', this.doActionWithItem);
+        $(document).on('click', '#update-button', this.updateTask);
 
         // Log the tasks to the console when pressing Escape
         $(document).on('keydown', function(e) {
@@ -166,13 +169,13 @@ var Todo = {
     // ----------------------------------------
     validateForm: function() {
         var task = this.getFormValues(),
-            todaysDateMatch = /[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
+            addedDateMatch = /[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
             dueDateMatch = /[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
             headingMatch = /.{1,50}/,
             errorMessage,
             passedValidation = true;
 
-        if( !task.todaysDate.match(todaysDateMatch) ) {
+        if( !task.addedDate.match(addedDateMatch) ) {
             passedValidation = false;
             errorMessage = "The date has to be in format YYYY-MM-DD";
             this.$formTodaysDate.parent().addClass('has-error')
@@ -251,7 +254,7 @@ var Todo = {
             // Build all the markup (yes, this is ugly, I know!)
             html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item'+ isDone + dueMarkup +'">';
                 if(due < now) { html+='<span class="due-warning">DUE DATE PAST</span>'; }
-                html+='<span class="date"><span class="glyphicon glyphicon-calendar"></span> '+ this.tasks[i].todaysDate +'</span>';
+                html+='<span class="date"><span class="glyphicon glyphicon-calendar"></span> '+ this.tasks[i].addedDate +'</span>';
                 html+='<h4><span class="prio">'+ prio +'</span> '+ this.tasks[i].heading +'</h4>';
                 html+='<p class="desc">'+ this.tasks[i].desc +'</p>';
                 html+='<span class="due"><span class="glyphicon glyphicon-time"></span> '+ this.tasks[i].dueDate +'</span>';
@@ -349,10 +352,54 @@ var Todo = {
     // Edit task
     // ----------------------------------------
     editTask: function(id) {
+        // var self = this;
 
         for (var i = 0; i < this.tasks.length; i++) {
-
+            if(this.tasks[i].id === id) {
+                var taskToEdit = this.tasks[i];
+            }
         }
+
+        this.fillForm(taskToEdit);
+        this.taskToEdit = taskToEdit;
+    },
+
+    // ----------------------------------------
+    // Fill the form (takes an object)
+    // ----------------------------------------
+    fillForm: function(task, cb) {
+        // this.$formTodaysDate = $('#date').val(task.addedDate);
+        this.$formDueDate.val(task.dueDate);
+        this.$formHeading.val(task.heading);
+        this.$formDesc.val(task.desc);
+
+        if (task.priority === 1) {
+            this.$formPrio.find('label:nth-child(1)').trigger('click');
+        }
+        else if (task.priority === 2) {
+            this.$formPrio.find('label:nth-child(2)').trigger('click');
+        }
+        else if (task.priority === 3) {
+            this.$formPrio.find('label:nth-child(3)').trigger('click');
+        }
+
+        this.$formAddButton.hide();
+        this.$formUpdateButton.show();
+
+        if(typeof cb === "function") { cb.call(); }
+
+    },
+
+    // ----------------------------------------
+    // Update task
+    // ----------------------------------------
+    updateTask: function(e) {
+        e.preventDefault();
+
+        var self = Todo;
+        var form = self.getFormValues();
+
+        console.log(self.taskToEdit);
     }
 };
 

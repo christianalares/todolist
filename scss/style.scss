@@ -73,6 +73,7 @@ body {
     .task {
         // Push all to the right to make room for the counter
         padding-left: 60px;
+        padding-right: 90px;
         overflow: hidden;
 
         // Title
@@ -188,4 +189,9 @@ body {
         opacity: .6;
     }
 
+
+}
+
+#update-button {
+    display: none;
 }
