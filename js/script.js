@@ -409,8 +409,8 @@ var Todo = {
             this.$formPrio.find('label:nth-child(3)').trigger('click');
         }
 
-        this.$formAddButton.toggle();
-        this.$formUpdateButton.toggle();
+        this.$formAddButton.hide();
+        this.$formUpdateButton.show();
 
         // this.updateTask(index);
         this.tempUpdateIndex = index;
@@ -432,8 +432,8 @@ var Todo = {
         self.tasks[index] = task;
 
         self.updateDB();
-        self.$formAddButton.toggle();
-        self.$formUpdateButton.toggle();
+        self.$formAddButton.show();
+        self.$formUpdateButton.hide();
         self.clearForm();
     }
 };
