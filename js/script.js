@@ -230,17 +230,26 @@ var Todo = {
         } else { this.$editBtn.show(); }
 
         for (var i = 0; i < this.tasks.length; i++) {
-            var html = "", prio, isDone;
+            var html = "", prio, isDone = "", now, due, dueMarkup = "";
+
             // Set prio from int to !, !! or !!!
             if(this.tasks[i].priority === 1) { prio = "!"; }
             else if(this.tasks[i].priority === 2) { prio = "!!"; }
             else if(this.tasks[i].priority === 3) { prio = "!!!"; }
 
+            // Check if due date is more than todays date
+            // var now = $.datepicker.formatDate( "yy-mm-dd", new Date() );
+            now = new Date().getTime();
+            due = Date.parse( this.tasks[i].dueDate );
+
+            console.log("due: " + due, "now: " + now);
+
+            if(due > now) { dueMarkup = " item-dued"; }
+
             if(this.tasks[i].isDone) { isDone = " item-done"; } // This string will be added to the class
-            else { isDone = ""; }
 
             // Build all the markup (yes, this is ugly, I know!)
-            html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item'+ isDone +'">';
+            html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item'+ isDone + dueMarkup +'">';
                 html+='<span class="date"><span class="glyphicon glyphicon-calendar"></span> '+ this.tasks[i].todaysDate +'</span>';
                 html+='<h4><span class="prio">'+ prio +'</span> '+ this.tasks[i].heading +'</h4>';
                 html+='<p class="desc">'+ this.tasks[i].desc +'</p>';

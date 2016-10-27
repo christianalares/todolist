@@ -11,6 +11,7 @@ $dueIconColor: #f0ad4e;
 $dateIconColor: #337ab7;
 $prioColor: #b24926;
 $itemDoneBG: lighten(#5cb85c, 43%);
+$itemDuedBG: lighten(red, 42%);
 
 
 // ------------------------------
@@ -157,13 +158,21 @@ body {
     }
     // Below line fucks upp animations from jQuery
     // transition: all .5s ease-in-out;
-    
+
     .item-done {
         background-color: $itemDoneBG;
         opacity: .5;
 
         h4, .desc, .due {
             text-decoration: line-through;
+        }
+    }
+
+    .item-dued {
+        background-color: $itemDuedBG;
+
+        .due::after {
+            content: 'Due date past!';
         }
     }
 

@@ -87,5 +87,7 @@ body {
     opacity: .5; }
     #tasks .item-done h4, #tasks .item-done .desc, #tasks .item-done .due {
       text-decoration: line-through; }
+  #tasks .item-dued {
+    background-color: #ffd6d6; }
   #tasks .moving-task {
     opacity: .6; }
