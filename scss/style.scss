@@ -11,7 +11,7 @@ $dueIconColor: #f0ad4e;
 $dateIconColor: #337ab7;
 $prioColor: #b24926;
 $itemDoneBG: lighten(#5cb85c, 43%);
-$itemDuedBG: lighten(red, 42%);
+$itemDuedBG: lighten(red, 45%);
 
 
 // ------------------------------
@@ -160,7 +160,7 @@ body {
     // transition: all .5s ease-in-out;
 
     .item-done {
-        background-color: $itemDoneBG;
+        background-color: $itemDoneBG !important;
         opacity: .5;
 
         h4, .desc, .due {
@@ -171,9 +171,16 @@ body {
     .item-dued {
         background-color: $itemDuedBG;
 
-        .due::after {
-            content: 'Due date past!';
-        }
+    }
+    .due-warning {
+        font-size: .8em;
+        border: 1px solid red;
+        background-color: darken($itemDuedBG, 5%);
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px;
+        margin-left: 10px;
     }
 
     // When list item is moving dim it down

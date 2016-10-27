@@ -242,14 +242,15 @@ var Todo = {
             now = new Date().getTime();
             due = Date.parse( this.tasks[i].dueDate );
 
-            console.log("due: " + due, "now: " + now);
+            // console.log("due: " + due, "now: " + now);
 
-            if(due > now) { dueMarkup = " item-dued"; }
+            if(due < now) { dueMarkup = " item-dued"; }
 
             if(this.tasks[i].isDone) { isDone = " item-done"; } // This string will be added to the class
 
             // Build all the markup (yes, this is ugly, I know!)
             html += '<li data-task-id="'+ this.tasks[i].id +'" class="task list-group-item'+ isDone + dueMarkup +'">';
+                if(due < now) { html+='<span class="due-warning">DUE DATE PAST</span>'; }
                 html+='<span class="date"><span class="glyphicon glyphicon-calendar"></span> '+ this.tasks[i].todaysDate +'</span>';
                 html+='<h4><span class="prio">'+ prio +'</span> '+ this.tasks[i].heading +'</h4>';
                 html+='<p class="desc">'+ this.tasks[i].desc +'</p>';
