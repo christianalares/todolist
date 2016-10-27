@@ -5,6 +5,7 @@ var Todo = {
     // ----------------------------------------
     init: function() {
         this.checkDB();
+        this.checkCounter();
         this.cacheDom();
         this.bindEvents();
         this.renderTasks();
@@ -24,6 +25,25 @@ var Todo = {
         else {
             this.tasks = JSON.parse( result );
         }
+    },
+
+    // ----------------------------------------
+    // Check the counter localStorage
+    // ----------------------------------------
+    checkCounter: function() {
+        var counter = localStorage.getItem('todoCounter');
+
+        if( counter === null  ) {
+            this.counter = 1;
+        }
+        else {
+            this.counter = counter;
+        }
+    },
+
+    updateCounter: function() {
+        this.counter++;
+        localStorage.setItem( 'todoCounter', this.counter );
     },
 
     // ----------------------------------------
@@ -85,7 +105,7 @@ var Todo = {
             'heading': this.$formHeading.val(),
             'desc': this.$formDesc.val(),
             'priority': this.$formPrio.children('.active').find('input').data("prio"),
-            'id': this.tasks.length + 1,
+            'id': this.counter,
             'isDone': false
         };
 
@@ -167,6 +187,7 @@ var Todo = {
         if( self.validateForm() ) {
             self.tasks.push(task);
             self.updateDB();
+            self.updateCounter();
             self.clearForm();
         }
     },
