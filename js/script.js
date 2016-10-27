@@ -1,5 +1,5 @@
 var Todo = {
-    taskToEdit: "",
+    tempUpdateIndex: "",
     // ----------------------------------------
     // Initialize
     // ----------------------------------------
@@ -9,7 +9,7 @@ var Todo = {
         this.bindEvents();
         this.renderTasks();
         this.initDatesInForm();
-        this.makeTasksDraggable();
+        // this.makeTasksDraggable();
     },
 
     // ----------------------------------------
@@ -93,27 +93,50 @@ var Todo = {
     },
 
     // ----------------------------------------
+    // Clear the form
+    // ----------------------------------------
+    clearForm: function() {
+        this.$formDueDate.val("");
+        this.$formHeading.val("");
+        this.$formDesc.val("");
+        // this.$formPrio.children('.active').find('input').data("prio"),
+    },
+
+    // ----------------------------------------
     // Event binding
     // ----------------------------------------
     bindEvents: function() {
+        var self = this;
 
+        // When click on "Add task" button
         this.$formAddButton.on( 'click', this.addTask );
+
+        // When click on the small edit button
         $(document).on('click', '#' + this.$editBtn.attr('id'), this.toggleEditMode);
-        $(document).on('click', '.edit-btns button', this.doActionWithItem);
+
+        // When click on an edit button on a specific task
+        $(document).on('click', '.edit-btns button', function(e) {
+            var $this = $(this),
+                id = $this.parent().parent().data('task-id'),
+                action = $this.data('action');
+
+            if(action === 'doneAction')        { self.toggleMarkDone(id); }
+            else if(action === 'editAction')   { self.editTask(id); }
+            else if(action === 'deleteAction') { self.deleteTask(id); }
+        });
+
+        // When click on the update button when editing a task
         $(document).on('click', '#update-button', this.updateTask);
 
-        // Log the tasks to the console when pressing Escape
+        // Log the tasks to the console when pressing Escape (for debugging)
         $(document).on('keydown', function(e) {
             if (e.keyCode === 27) {
                 console.log('Array:');
-                console.log( Todo.tasks );
-
-                // console.log('localStorage:');
-                // console.log( localStorage.getItem('todoList') );
+                console.log( self.tasks );
             }
         });
 
-        // Clear localStorage
+        // Clear localStorage (for debugging)
         $('.clearLS').on('click', function() {
             localStorage.clear();
             console.log('localStorage cleared');
@@ -138,20 +161,14 @@ var Todo = {
     addTask: function(e) {
         e.preventDefault();
 
-        var self = Todo;
+        var self = Todo,
+            task = self.getFormValues();
 
         if( self.validateForm() ) {
-            self.pushToArray();
+            self.tasks.push(task);
+            self.updateDB();
+            self.clearForm();
         }
-    },
-
-    // ----------------------------------------
-    // Add to the tasks array
-    // ----------------------------------------
-    pushToArray: function() {
-        var task = this.getFormValues();
-        this.tasks.push(task);
-        this.updateDB();
     },
 
     // ----------------------------------------
@@ -259,7 +276,8 @@ var Todo = {
                 html+='<p class="desc">'+ this.tasks[i].desc +'</p>';
                 html+='<span class="due"><span class="glyphicon glyphicon-time"></span> '+ this.tasks[i].dueDate +'</span>';
 
-                html+='<span class="move-icon glyphicon glyphicon-menu-hamburger"></span>';
+                // Moving tasks inactve
+                // html+='<span class="move-icon glyphicon glyphicon-menu-hamburger"></span>';
 
                 html+='<div class="btn-group btn-group-lg edit-btns">';
                     html+='<button type="button" data-action="doneAction" class="btn btn-default">';
@@ -280,21 +298,6 @@ var Todo = {
             this.$tasksUL.append(html);
         }
 
-    },
-
-    // ----------------------------------------
-    // Action button clicked (check, edit, delete)
-    // ----------------------------------------
-    doActionWithItem: function() {
-        // this = the button that was clicked
-        var self = Todo;
-        var $this = $(this),
-            id = $this.parent().parent().data('task-id'),
-            action = $this.data('action');
-
-        if(action === 'doneAction') { self.toggleMarkDone(id); }
-        else if(action === 'editAction') { self.editTask(id); }
-        else if(action === 'deleteAction') { self.deleteTask(id); }
     },
 
     // ----------------------------------------
@@ -352,41 +355,44 @@ var Todo = {
     // Edit task
     // ----------------------------------------
     editTask: function(id) {
-        // var self = this;
+        var self = this,
+            taskInArrayToEdit;
 
         for (var i = 0; i < this.tasks.length; i++) {
             if(this.tasks[i].id === id) {
-                var taskToEdit = this.tasks[i];
+                taskInArrayToEdit = this.tasks.indexOf( this.tasks[i] );
             }
         }
 
-        this.fillForm(taskToEdit);
-        this.taskToEdit = taskToEdit;
+        this.fillForm(taskInArrayToEdit);
+        this.toggleEditMode();
+        this.taskInArrayToEdit = taskInArrayToEdit;
     },
 
     // ----------------------------------------
     // Fill the form (takes an object)
     // ----------------------------------------
-    fillForm: function(task, cb) {
+    fillForm: function(index) {
         // this.$formTodaysDate = $('#date').val(task.addedDate);
-        this.$formDueDate.val(task.dueDate);
-        this.$formHeading.val(task.heading);
-        this.$formDesc.val(task.desc);
+        this.$formDueDate.val(this.tasks[index].dueDate);
+        this.$formHeading.val(this.tasks[index].heading);
+        this.$formDesc.val(this.tasks[index].desc);
 
-        if (task.priority === 1) {
+        if (this.tasks[index].priority === 1) {
             this.$formPrio.find('label:nth-child(1)').trigger('click');
         }
-        else if (task.priority === 2) {
+        else if (this.tasks[index].priority === 2) {
             this.$formPrio.find('label:nth-child(2)').trigger('click');
         }
-        else if (task.priority === 3) {
+        else if (this.tasks[index].priority === 3) {
             this.$formPrio.find('label:nth-child(3)').trigger('click');
         }
 
-        this.$formAddButton.hide();
-        this.$formUpdateButton.show();
+        this.$formAddButton.toggle();
+        this.$formUpdateButton.toggle();
 
-        if(typeof cb === "function") { cb.call(); }
+        // this.updateTask(index);
+        this.tempUpdateIndex = index;
 
     },
 
@@ -395,11 +401,19 @@ var Todo = {
     // ----------------------------------------
     updateTask: function(e) {
         e.preventDefault();
+        var self = Todo,
+            index = self.tempUpdateIndex,
+            task = self.getFormValues();
 
-        var self = Todo;
-        var form = self.getFormValues();
+        // Update the ID in this task to the one that was clicked instead of a new one
+        task.id = self.tasks[index].id;
 
-        console.log(self.taskToEdit);
+        self.tasks[index] = task;
+
+        self.updateDB();
+        self.$formAddButton.toggle();
+        self.$formUpdateButton.toggle();
+        self.clearForm();
     }
 };
 
