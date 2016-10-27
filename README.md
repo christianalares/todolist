@@ -1,2 +1,5 @@
 # Todo-list
-Detta är en uppgift på KYH Front-End 2016 av mig Christian Alares
+This is an assignment I got in my school where I'm currently studying Front End Development.
+
+The "database" is only using localStorage so it's only in your browser.
+Se demo here: <http://christianalares.com/todolist>
